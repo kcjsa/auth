@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>KS Dashboard</title>
+</head>
+<body>
+  <h1>Dashboard</h1>
+
+  <p>Discord ID: <span id="discordId"></span></p>
+  <p>User ID: <span id="userId"></span></p>
+
+  <button onclick="generate()">リンクコード生成</button>
+
+  <h2>Link Code</h2>
+  <pre id="code">---</pre>
+
+  <p>
+    Minecraftで<br>
+    <code>/link &lt;DiscordID&gt; &lt;Code&gt;</code>
+  </p>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const userId = params.get("userId");
+    const discordId = params.get("discordId");
+
+    if (!userId || !discordId) {
+      alert("未ログインです");
+      location.href = "/";
+    }
+
+    document.getElementById("userId").textContent = userId;
+    document.getElementById("discordId").textContent = discordId;
+
+    async function generate() {
+      const res = await fetch("https://YOUR_WORKER/api/link/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+      });
+
+      const json = await res.json();
+      document.getElementById("code").textContent = json.code;
+    }
+  </script>
+</body>
+</html>
