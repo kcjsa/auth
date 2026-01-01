@@ -48,7 +48,7 @@
     document.getElementById("discordId").textContent = discordId;
 
     async function generate() {
-      const r = await fetch("https://YOUR_WORKER/api/link/generate", {
+      const r = await fetch("https://patient-frost-37d2.kurea-ch124.workers.dev/api/link/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId })
