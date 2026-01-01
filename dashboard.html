@@ -3,30 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>KS Dashboard</title>
+  <style>
+    body { font-family: sans-serif; }
+    pre {
+      background: #111;
+      color: #0f0;
+      padding: 12px;
+      user-select: all;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
   <h1>Dashboard</h1>
 
-  <p>Discord ID: <span id="discordId"></span></p>
-  <p>User ID: <span id="userId"></span></p>
+  <p><b>Discord ID</b></p>
+  <pre id="discordId"></pre>
+
+  <p><b>User ID</b></p>
+  <pre id="userId"></pre>
 
   <button onclick="generate()">リンクコード生成</button>
 
-  <h2>Link Code</h2>
+  <h2>Link Code（10分有効）</h2>
   <pre id="code">---</pre>
 
-  <p>
-    Minecraftで<br>
-    <code>/link &lt;DiscordID&gt; &lt;Code&gt;</code>
-  </p>
+  <h2>Minecraft で実行</h2>
+  <pre id="mc">---</pre>
 
   <script>
-    const params = new URLSearchParams(location.search);
-    const userId = params.get("userId");
-    const discordId = params.get("discordId");
+    const p = new URLSearchParams(location.search);
+    const userId = p.get("userId");
+    const discordId = p.get("discordId");
 
     if (!userId || !discordId) {
-      alert("未ログインです");
+      alert("未ログイン");
       location.href = "/";
     }
 
@@ -34,14 +48,21 @@
     document.getElementById("discordId").textContent = discordId;
 
     async function generate() {
-      const res = await fetch("https://patient-frost-37d2.kurea-ch124.workers.dev/api/link/generate", {
+      const r = await fetch("https://YOUR_WORKER/api/link/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId })
       });
 
-      const json = await res.json();
-      document.getElementById("code").textContent = json.code;
+      const j = await r.json();
+      if (!j.code) {
+        alert("コード生成失敗");
+        return;
+      }
+
+      document.getElementById("code").textContent = j.code;
+      document.getElementById("mc").textContent =
+        `/link ${discordId} ${j.code}`;
     }
   </script>
 </body>
